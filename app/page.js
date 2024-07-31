@@ -30,6 +30,8 @@ export default function Home() {
   const [item, setItem] = useState(''); // State for the input field
   const [items, setItems] = useState([]); // State for the list of items
   const [editingIndex, setEditingIndex] = useState(null); // State for the editing index, initial value of editingIndex is null
+  const [searchQuery, setSearchQuery] = useState(''); // State for the search query
+
 
   const handleAddItem = () => { //handleAddItem adds a new item to the list or updates existing item
     if (item.trim() !== '') { //trim() is used to remove leading and trailing spaces from a string
@@ -98,8 +100,25 @@ export default function Home() {
     setItems(updatedItems);
   };
 
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value) //we are using seSearchQuery function to assign the value we are searching to searchQuery variable  
+  };
+  const filteredItems = items.filter(item =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
+  
+
   return (
     <Container maxWidth="sm">
+      <TextField
+          label="Search Item"
+          variant="outlined"
+          fullWidth
+          value={searchQuery}
+          onChange={handleSearchChange}
+          sx={{marginTop:2}}
+        />
       <Box
         sx={{
           display: 'flex',
@@ -128,7 +147,7 @@ export default function Home() {
           {editingIndex !== null ? 'Update Item' : 'Add Item'}
         </Button>
         <List sx={{ marginTop: 2, width: '100%' }}>
-          {items.map((item, index) => (
+          {filteredItems.map((item, index) => (
             <ListItem key={index} sx={{ display: 'flex', alignItems: 'center' }}>
               <ListItemText primary={item.name} />
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
