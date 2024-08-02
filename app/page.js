@@ -1,30 +1,12 @@
-// import { Box, Stack } from '@mui/material';
-
-
-// const item = ['Tomato','Potato','Garlic','Ginger','Onion','Carrot',]
-// export default function Home() {
-//   return <Box
-//     width="100vw"
-//     height="100vh"
-//     display={'flex'}
-//     justifyContent={'center'}
-//     alignItems={'center'}
-//   >
-//     <Stack width= "800px"  height= "600px">
-      
-//     </Stack>
-//   </Box>
-
-// }
-
-
 "use client";//The "use client" directive is used in React to explicitly mark a component as a client component in environments where both server and client components are supported, such as in React 18 and beyond. This directive is necessary to differentiate between server-side rendering and client-side rendering.
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
+import {db} from '@/firebase';
+import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs} from 'firebase/firestore';
 import { Box, TextField, Container, Typography, Button, List, ListItem, ListItemText, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
+import RemoveIcon from '@mui/icons-material/Remove'
 
 export default function Home() {
   const [item, setItem] = useState(''); // State for the input field
@@ -33,7 +15,19 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState(''); // State for the search query
 
 
-  const handleAddItem = () => { //handleAddItem adds a new item to the list or updates existing item
+  const fetch = async() => { 
+    const records = await getDocs(collection(db,'Pantry'));
+    const itemList = records.docs.map(doc=>({id: doc.id, ...doc.data()}));
+    setItems(itemList);
+  };
+
+  useEffect(() => {
+    fetch();
+  }  );
+
+  //Adding Item, checking if the item exist, updating the item.
+  // Database:
+  const handleAddItem = async() => { //handleAddItem adds a new item to the list or updates existing item
     if (item.trim() !== '') { //trim() is used to remove leading and trailing spaces from a string
       const lowerCasedItem = item.trim().toLowerCase(); // trims and converts the string to lower case
       // Check if the item already exists in a case-insensitive manner
@@ -51,20 +45,28 @@ export default function Home() {
         const updatedItems = items.map((currentItem, index) =>
           index === existingItemIndex ? { ...currentItem, quantity: currentItem.quantity + 1 } : currentItem
         );
+        await updateDoc(doc(db, 'Pantry', items[existingItemIndex].id), {quantity: updatedItems[existingItemIndex].quantity,}) ;
         setItems(updatedItems); //updating the function with new list of items and quantity
       } else {
         // Item does not exist, add a new item
-        const newItem = { name: item.trim(), quantity: 1 }; // Store item name as entered
+         // Store item name as entered
         if (editingIndex !== null) {
           // Update the existing item
+          const newItem = { id:items[editingIndex].id,name: item.trim(), quantity: items[editingIndex].quantity};
           const updatedItems = items.map((currentItem, index) =>
             index === editingIndex ? newItem : currentItem
           );
+          await updateDoc(doc(db, 'Pantry', items[editingIndex].id), newItem);
+          // await updateDoc(doc(db, 'pantry', items[editingIndex].id),{newItem});
           setItems(updatedItems);
           setEditingIndex(null); // Reset editing index
         } else {
           // Add a new item
+          const newItem = {name:item.trim(),quantity:1};
+          const refId = await addDoc(collection(db, 'Pantry'),newItem); // await - waits until it get resposne from database
+          newItem.id = refId.id
           setItems([...items, newItem]);
+          console.log(items);
         }
       }
       setItem(''); // Clear the input field
@@ -76,27 +78,32 @@ export default function Home() {
     setEditingIndex(index); // Set the index of the item being edited
   };
 
-  const handleDeleteItem = (index) => {
+  const handleDeleteItem = async (index) => {
     // Remove item by index
     const updatedItems = items.filter((_, i) => i !== index); //filters out all the indexes nd stores in a new array expect the index of that item which we want to delete
+    await deleteDoc(doc(db, 'Pantry', items[index].id)); 
     setItems(updatedItems);
     if (editingIndex === index) { //as we are storing indexes in editingIndex, we have to also to delete from that v ariable
       setEditingIndex(null); // Reset editing index if the edited item was deleted
       setItem(''); // Clear the input field
     }
   };
+   
 
-  const incrementQuantity = (index) => {
+    
+  const incrementQuantity = async (index) => {
     const updatedItems = items.map((currentItem, i) =>
       i === index ? { ...currentItem, quantity: currentItem.quantity + 1 } : currentItem
     );
+    await updateDoc(doc(db, 'Pantry', items[index].id), {quantity: updatedItems[index].quantity,});
     setItems(updatedItems);
   };
 
-  const decrementQuantity = (index) => {
+  const decrementQuantity = async (index) => {
     const updatedItems = items.map((currentItem, i) =>
       i === index && currentItem.quantity > 1 ? { ...currentItem, quantity: currentItem.quantity - 1 } : currentItem
     );
+    await updateDoc(doc(db, 'Pantry', items[index].id), {quantity: updatedItems[index].quantity,});
     setItems(updatedItems);
   };
 
@@ -106,6 +113,8 @@ export default function Home() {
   const filteredItems = items.filter(item =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  
+  
   
   
 
