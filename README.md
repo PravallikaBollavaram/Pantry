@@ -1,4 +1,4 @@
-**PANTRY APPLICATION**
+**PANTRY APPLICATION**\\
 A pantry management application that allows users to perform CRUD operations on pantry items. 
 
 **TECHNOLOGY STACK**
