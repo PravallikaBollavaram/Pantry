@@ -138,7 +138,7 @@ export default function Home() {
         }}
       >
         <Typography variant="h4" gutterBottom>
-          Pantry Items:
+          Pantry Items List:
         </Typography>
         <TextField
           label="Enter pantry item"
