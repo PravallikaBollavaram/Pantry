@@ -1,24 +1,30 @@
-**PANTRY APPLICATION**\\
+#PANTRY APPLICATION  
+
 A pantry management application that allows users to perform CRUD operations on pantry items. 
 
-**TECHNOLOGY STACK**
+##TECHNOLOGY STACK
+
 **Frontend**
 1. Next.js
 2. React
 3. Material-UI
+   
 **Backend**
 1. Firebase
+
+   
 **Deployement**
 1. Vercel
 
-**FEATURES**
+##FEATURES
 1. CRUD Operations:
     -> Add, edit, and delete pantry items.
     -> Update item quantities with add and remove buttons.
+
 2. Search Functionality:
     ->Search for items in the pantry list.
 
-**INSTALLATION**
+##INSTALLATION
 1. Clone the repository
    git clone https://github.com/PravallikaBollavaram/Pantry
 2. Navigate to the project directory
