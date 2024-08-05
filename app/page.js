@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove'
+import ProminentAppBar from './ProminentAppBar';
 
 export default function Home() {
   const [item, setItem] = useState(''); // State for the input field
@@ -114,20 +115,19 @@ export default function Home() {
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
-  
-  
-  
 
   return (
+    <Container maxWidth >
+       <ProminentAppBar handleSearchChange={handleSearchChange} searchQuery={searchQuery} /> 
     <Container maxWidth="sm">
-      <TextField
+      {/* <TextField
           label="Search Item"
           variant="outlined"
           fullWidth
           value={searchQuery}
           onChange={handleSearchChange}
           sx={{marginTop:2}}
-        />
+        /> */}
       <Box
         sx={{
           display: 'flex',
@@ -193,6 +193,7 @@ export default function Home() {
           ))}
         </List>
       </Box>
+    </Container>
     </Container>
   );
 }
